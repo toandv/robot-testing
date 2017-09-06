@@ -6,13 +6,11 @@ import os.path
 import sys
 import tempfile
 
-
 DATABASE_FILE = os.path.join(tempfile.gettempdir(),
                              'robotframework-quickstart-db.txt')
 
 
 class UserDataBase(object):
-
     def __init__(self, db_file=DATABASE_FILE):
         self.users = self._read_users(db_file)
         self.db_file = db_file
@@ -33,6 +31,13 @@ class UserDataBase(object):
             return 'Creating user failed: %s' % err
         self.users[user.username] = user
         return 'SUCCESS'
+
+    def delete_user(self, username):
+        if username in self.users:
+            del self.users[username]
+            return 'SUCCESS'
+        else:
+            return 'NOT FOUND'
 
     def login(self, username, password):
         if self._is_valid_user(username, password):
@@ -68,7 +73,6 @@ class UserDataBase(object):
 
 
 class User(object):
-
     def __init__(self, username, password, status='Inactive'):
         self.username = username
         self.password = password
@@ -105,6 +109,7 @@ class User(object):
 
 
 def login(username, password):
+    print(tempfile.gettempdir())
     with UserDataBase() as db:
         print(db.login(username, password))
 
@@ -119,14 +124,20 @@ def change_password(username, old_pwd, new_pwd):
         print(db.change_password(username, old_pwd, new_pwd))
 
 
+def delete_user(username):
+    with UserDataBase() as db:
+        print(db.delete_user(username))
+
+
 def help():
     print('Usage: %s { create | login | change-password | help }'
-           % os.path.basename(sys.argv[0]))
+          % os.path.basename(sys.argv[0]))
 
 
 if __name__ == '__main__':
     actions = {'create': create_user, 'login': login,
-               'change-password': change_password, 'help': help}
+               'change-password': change_password, 'help': help,
+               'delete': delete_user}
     try:
         action = sys.argv[1]
     except IndexError:

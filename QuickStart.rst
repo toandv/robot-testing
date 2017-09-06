@@ -10,7 +10,7 @@ Copyright © Nokia Networks. Licensed under the
 __ http://creativecommons.org/licenses/by/3.0/
 
 .. contents:: Table of contents:
-   :local:
+    :local:
    :depth: 2
 
 Introduction
@@ -205,6 +205,13 @@ example, the following table has two tests:
         Attempt to Login with Credentials    betty    wrong
         Status Should Be    Access Denied
 
+    User can delete an existing user
+        Create Valid User   toandv    P4ssw0rd
+        Delete existing user    toandv
+
+    User can't delete an existing user
+        Delete non-existing user    toandv123_not_found
+
 Notice that these tests read like manual tests written in English rather
 than like automated test cases. Robot Framework uses the keyword-driven
 approach that supports writing tests that capture the essence of the actions
@@ -346,6 +353,16 @@ keyword table:
         Attempt to login with credentials    ${username}    ${password}
         Status should be    Logged In
 
+    Delete non-existing user
+        [Arguments]     ${username}
+        Delete user     ${username}
+        Status should be    NOT FOUND
+
+    Delete existing user
+        [Arguments]     ${username}
+        Delete user     ${username}
+        Status should be    SUCCESS
+
     # Keywords below used by higher level tests. Notice how given/when/then/and
     # prefixes can be dropped. And this is a comment.
 
@@ -390,6 +407,7 @@ variable definition is quite simple, as seen in this variable table:
     ${DATABASE FILE}          ${TEMPDIR}${/}robotframework-quickstart-db.txt
     ${PWD INVALID LENGTH}     Password must be 7-12 characters long
     ${PWD INVALID CONTENT}    Password must be a combination of lowercase and uppercase letters and numbers
+    ${INVALID_USER}           test_user_1
 
 Variables can also be given from the command line which is useful if
 the tests need to be executed in different environments. For example
